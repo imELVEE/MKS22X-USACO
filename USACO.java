@@ -5,10 +5,26 @@ public class USACO{
   private static int[][] lake;
   private static int[] start = new int[4];
   private static String[] instructions;
+  private static int[][] EZinstructions;
 
   public static int bronze(String filename) throws FileNotFoundException{
     makeLake(filename);
+    fixINSTRO();
+
+    String first = "";
+    for(int i = 0 ; i < start.length ; i++){
+      first += start[i] + " ";
+    }
+    System.out.println(first);
     System.out.println(theLake());
+    for (int i = 0 ; i < EZinstructions.length ; i++){
+      String line = "";
+      for (int in = 0 ; in < EZinstructions[i].length ; in++){
+        line += EZinstructions[i][in] + " ";
+      }
+      System.out.println(line);
+    }
+
     return -1;
   }
 
@@ -35,6 +51,7 @@ public class USACO{
         p += startIns.charAt(params);
       }
     }
+    start[at] = Integer.parseInt(p);
 
     //make the grid into a 2d array
     lake = new int[start[0]][start[1]];
@@ -81,7 +98,26 @@ public class USACO{
       }
       lakeString += "\n";
     }
-    return lakeString;
+    return lakeString.substring(0,lakeString.length()-1);
+  }
+
+  private static void fixINSTRO(){
+    EZinstructions = new int[instructions.length][3];
+    for (int l = 0 ; l < instructions.length ; l++){
+      String p = "";
+      int at = 0;
+      for (int params = 0 ; params < instructions[l].length() ; params++){
+        if (instructions[l].charAt(params) == ' '){
+          EZinstructions[l][at] = Integer.parseInt(p);
+          at++;
+          p = "";
+        }
+        else{
+          p += instructions[l].charAt(params);
+        }
+      }
+      EZinstructions[l][at] = Integer.parseInt(p);
+    }
   }
 
 }
