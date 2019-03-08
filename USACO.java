@@ -4,12 +4,11 @@ import java.util.Scanner;
 public class USACO{
   private static int[][] lake;
   private static int[] start = new int[4];
-  private static String[] instructions;
   private static int[][] EZinstructions;
 
   public static int bronze(String filename) throws FileNotFoundException{
     makeLake(filename);
-    fixINSTRO();
+    stomp();
 
     String first = "";
     for(int i = 0 ; i < start.length ; i++){
@@ -24,6 +23,7 @@ public class USACO{
       }
       System.out.println(line);
     }
+
 
     return -1;
   }
@@ -74,11 +74,13 @@ public class USACO{
     }
 
     //get the list of instructions
-    instructions = new String[start[3]];
+    String[] instructions = new String[start[3]];
     for (int i = 0 ; i < instructions.length && info.hasNextLine() ; i++){
       String line = info.nextLine();
       instructions[i] = line;
     }
+
+    fixINSTRO(instructions);
   }
 
   //RECYCLED KNIGHTSBOARD TOSTRING
@@ -101,7 +103,8 @@ public class USACO{
     return lakeString.substring(0,lakeString.length()-1);
   }
 
-  private static void fixINSTRO(){
+  //make the instructions easier to access
+  private static void fixINSTRO(String[] instructions){
     EZinstructions = new int[instructions.length][3];
     for (int l = 0 ; l < instructions.length ; l++){
       String p = "";
@@ -120,4 +123,33 @@ public class USACO{
     }
   }
 
+  private static void stomp(){
+    int[][] around = new int[][] {{0,0}, {-1,0}, {-1,1}, {0,1}, {1,1}, {1,0}, {1,-1}, {0,-1}, {-1,-1}};
+    for (int i = 0 ; i < EZinstructions.length ; i++){
+      int[] threex3 = new int[9];
+      int[] one = EZinstructions[i];
+      for (int cow = 0 ; cow < around.length ; cow++){
+        if (one[0] + around[cow][0] > -1 && one[0] + around[cow][0] < lake.length && one[1] + around[cow][1] > -1 && one[1] + around[cow][1] < lake[i].length){
+          threex3[cow] = lake[one[0]+around[cow][0]][one[1]+around[cow][1]];
+        }
+      }
+      int changed = maximum(threex3) - one[2];
+      for (int cow = 0 ; cow < around.length ; cow++){
+        if (one[0] + around[cow][0] > -1 && one[0] + around[cow][0] < lake.length && one[1] + around[cow][1] > -1 && one[1] + around[cow][1] < lake[i].length){
+          if (lake[one[0]+around[cow][0]][one[1]+around[cow][1]] > changed){
+            lake[one[0]+around[cow][0]][one[1]+around[cow][1]] = changed;
+          }
+        }
+      }
+    }
+
+  }
+
+  private static int maximum(int[] numbers){
+    int ans = numbers[0];
+    for (int i = 0 ; i < numbers.length ; i++){
+      ans = Math.max(ans,numbers[i]);
+    }
+    return ans;
+  }
 }
