@@ -9,23 +9,8 @@ public class USACO{
   public static int bronze(String filename) throws FileNotFoundException{
     makeLake(filename);
     stomp();
-
-    String first = "";
-    for(int i = 0 ; i < start.length ; i++){
-      first += start[i] + " ";
-    }
-    System.out.println(first);
-    System.out.println(theLake());
-    for (int i = 0 ; i < EZinstructions.length ; i++){
-      String line = "";
-      for (int in = 0 ; in < EZinstructions[i].length ; in++){
-        line += EZinstructions[i][in] + " ";
-      }
-      System.out.println(line);
-    }
-
-
-    return -1;
+    fillLake();
+    return volume();
   }
 
 
@@ -83,13 +68,13 @@ public class USACO{
     fixINSTRO(instructions);
   }
 
-  //RECYCLED KNIGHTSBOARD TOSTRING
+  //RECYCLED KNIGHTSBOARD TOSTRING : for testing purposes
   private static String theLake(){
     String lakeString = "";
     for (int r = 0 ; r < lake.length ; r++){
       for (int c = 0 ; c < lake[r].length ; c++){
-        if (lake[r][c] == 0)
-          lakeString += "  _";
+        if (lake[r][c] <= 0)
+          lakeString += " __";
         else
           if (lake[r][c] > 9){
             lakeString += " " + lake[r][c];
@@ -125,17 +110,19 @@ public class USACO{
 
   private static void stomp(){
     int[][] around = new int[][] {{0,0}, {-1,0}, {-1,1}, {0,1}, {1,1}, {1,0}, {1,-1}, {0,-1}, {-1,-1}};
+
+    //follow each instruction: find the biggest in the 3x3, change it and anything bigger than the desired value
     for (int i = 0 ; i < EZinstructions.length ; i++){
       int[] threex3 = new int[9];
       int[] one = EZinstructions[i];
       for (int cow = 0 ; cow < around.length ; cow++){
-        if (one[0] + around[cow][0] > -1 && one[0] + around[cow][0] < lake.length && one[1] + around[cow][1] > -1 && one[1] + around[cow][1] < lake[i].length){
+        if (one[0] + around[cow][0] > -1 && one[0] + around[cow][0] < lake.length && one[1] + around[cow][1] > -1 && one[1] + around[cow][1] < lake[0].length){
           threex3[cow] = lake[one[0]+around[cow][0]][one[1]+around[cow][1]];
         }
       }
       int changed = maximum(threex3) - one[2];
       for (int cow = 0 ; cow < around.length ; cow++){
-        if (one[0] + around[cow][0] > -1 && one[0] + around[cow][0] < lake.length && one[1] + around[cow][1] > -1 && one[1] + around[cow][1] < lake[i].length){
+        if (one[0] + around[cow][0] > -1 && one[0] + around[cow][0] < lake.length && one[1] + around[cow][1] > -1 && one[1] + around[cow][1] < lake[0].length){
           if (lake[one[0]+around[cow][0]][one[1]+around[cow][1]] > changed){
             lake[one[0]+around[cow][0]][one[1]+around[cow][1]] = changed;
           }
@@ -152,4 +139,25 @@ public class USACO{
     }
     return ans;
   }
+
+  private static void fillLake(){
+    for (int r = 0 ; r < lake.length ; r++){
+      for (int c = 0 ; c < lake[r].length ; c++){
+        lake[r][c] = start[2] - lake[r][c];
+      }
+    }
+  }
+
+  private static int volume(){
+    int depth = 0;
+    for (int r = 0 ; r < lake.length ; r++){
+      for (int c = 0 ; c < lake[r].length ; c++){
+        if (lake[r][c] > 0){
+          depth += lake[r][c];
+        }
+      }
+    }
+    return depth * 72 * 72;
+  }
+
 }
