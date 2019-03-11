@@ -68,7 +68,7 @@ public class USACO{
     fixINSTRO(instructions);
   }
 
-  //RECYCLED KNIGHTSBOARD TOSTRING : for testing purposes
+  //RECYCLED KNIGHTSBOARD TOSTRING : for testing purposes/debugging
   private static String theLake(){
     String lakeString = "";
     for (int r = 0 ; r < lake.length ; r++){
@@ -158,6 +158,142 @@ public class USACO{
       }
     }
     return depth * 72 * 72;
+  }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
+  private static int[] inf = new int[3];
+  private static char[][] pasture;
+  private static int[] startCo = new int[2];
+  private static int[] endCo = new int[2];
+
+  public static int silver(String filename) throws FileNotFoundException{
+    dimension(filename);
+    return wander();
+  }
+
+  //set up all the variables
+  private static void dimension(String filename) throws FileNotFoundException{
+    //get the first line
+    String startIns = "";
+    File text = new File(filename);
+    Scanner info = new Scanner(text);
+    if (info.hasNextLine()){
+      startIns = info.nextLine();
+    }
+
+    //make the first line more easily accessible
+    String p = "";
+    int at = 0;
+    for (int params = 0 ; params < startIns.length() ; params++){
+      if (startIns.charAt(params) == ' '){
+        inf[at] = Integer.parseInt(p);
+        at++;
+        p = "";
+      }
+      else{
+        p += startIns.charAt(params);
+      }
+    }
+    inf[at] = Integer.parseInt(p);
+
+    //make the pasture
+    pasture = new char[inf[0]][inf[1]];
+    for (int i = 0 ; i < pasture.length && info.hasNextLine() ; i++){
+      String line = info.nextLine();
+      for (int c = 0 ; c < line.length() ; c++){
+        pasture[i][c] = line.charAt(c);
+      }
+    }
+
+    //get the start and ending coordinates
+    String coordinates = info.nextLine();
+    String coord = "";
+    int fosho = 0;
+    for (int co = 0 ; co < coordinates.length() ; co++){
+      if (coordinates.charAt(co) == ' '){
+        if (fosho <= 1){
+          startCo[fosho] = Integer.parseInt(coord);
+          fosho++;
+          coord = "";
+        }
+        else{
+          endCo[fosho-2] = Integer.parseInt(coord);
+          fosho++;
+          coord = "";
+        }
+      }
+      else{
+        coord += coordinates.charAt(co);
+      }
+    }
+    endCo[fosho-2] = Integer.parseInt(coord);
+  }
+
+  //for testing
+  private static String thePAST(){
+    String pastureString = "";
+    for (int r = 0 ; r < pasture.length ; r++){
+      for (int c = 0 ; c < pasture[r].length ; c++){
+        pastureString += pasture[r][c];
+      }
+      pastureString += "\n";
+    }
+    return pastureString.substring(0,pastureString.length()-1);
+  }
+
+  private static int wander(){
+    int[][] pastureSolved = new int[inf[0]][inf[1]];
+    int[][] pastureSolved2 = new int[inf[0]][inf[1]];
+    int steps = inf[2];
+    int[][] directions = new int[][] {{-1,0}, {0,1}, {1,0}, {0,-1}};
+
+    //set up pastureSolved
+    pastureSolved[startCo[0]-1][startCo[1]-1] = 1;
+    pastureSolved2[startCo[0]-1][startCo[1]-1] = 1;
+    for (int r = 0 ; r < pasture.length ; r++){
+      for (int c = 0 ; c < pasture[r].length ; c++){
+        if (pasture[r][c] == '*'){
+          pastureSolved[r][c] = -1;
+          pastureSolved2[r][c] = -1;
+        }
+      }
+    }
+
+
+    for (int taken = 0 ; taken < steps ; taken++){
+    for (int r = 0 ; r < pastureSolved.length ; r++){
+      for (int c = 0 ; c < pastureSolved[r].length ; c++){
+
+        if (pastureSolved[r][c] > 0){
+          pastureSolved2[r][c] = 0;
+
+          //in all four directions
+          for (int d = 0 ; d < directions.length ; d++){
+            //checks for out of bounds
+            if (r+directions[d][0] > -1 && r+directions[d][0] < pastureSolved.length && c+directions[d][1] > -1 && c+directions[d][1] < pastureSolved[r].length){
+              //checks for trees
+              if (pastureSolved[r+directions[d][0]][c+directions[d][1]] != -1){
+                pastureSolved2[r+directions[d][0]][c+directions[d][1]] += pastureSolved[r][c];
+              }
+            }
+          }
+
+        }
+
+      }
+    }
+
+    //copy over from 2 to 1
+    for (int r = 0 ; r < pasture.length ; r++){
+      for (int c = 0 ; c < pasture[r].length ; c++){
+          pastureSolved[r][c] = pastureSolved2[r][c];
+      }
+    }
+    }
+
+    return pastureSolved[endCo[0]-1][endCo[1]-1];
   }
 
 }

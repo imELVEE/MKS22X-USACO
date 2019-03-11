@@ -27,5 +27,32 @@ public class driver{
     catch(FileNotFoundException e){
       System.out.println(e);
     }
+
+    System.out.println();
+
+    try{
+      String beg = "testCases/ctravel.";
+      String in = ".in";
+      String out = ".out";
+
+      for (int i = 1 ; i < 6; i++){
+        String num = "";
+        File text = new File(beg+i+out);
+        Scanner info = new Scanner(text);
+        if (info.hasNextLine()){
+          num = info.nextLine();
+        }
+
+        if (USACO.silver(beg+i+in) == Integer.parseInt(num)){
+          System.out.println("ctravel."+i+"    PASS");
+        }
+        else{
+          System.out.println("ctravel."+i+"    FAIL");
+        }
+      }
+    }
+    catch(FileNotFoundException e){
+      System.out.println(e);
+    }
   }
 }
